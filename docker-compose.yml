@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: artemis_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: artemis_db
+      POSTGRES_USER: algostar
+      POSTGRES_PASSWORD: test@1A23
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_MULTIPLE_DATABASES: artemis_db,adk_sessions
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - artemis-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U algostar -d artemis_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: artemis_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "7000:7000"
+    networks:
+      - artemis-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7
+    container_name: artemis_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - artemis-network
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: artemis_celery
+    command: celery -A app.core.celery_worker.celery_app worker --loglevel=info --concurrency=4
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - app
+    networks:
+      - artemis-network
+
+volumes:
+  postgres_data:
+
+networks:
+  artemis-network:
+    driver: bridge

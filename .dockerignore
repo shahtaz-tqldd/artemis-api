@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+env/
+Dockerfile
+docker-compose.yml
+startapp.sh
+logs/
+*.log
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
