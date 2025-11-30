@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     celery_result_backend: str | None = None
     celery_task_track_started: bool = True
     celery_task_time_limit: int = 300
+
+    # google
+    google_cloud_project_name: str | None = None
+    google_cloud_location: str = "us-central1"
+    gemini_api_key: str | None = None
     
     # Rate Limiting
     rate_limit_enabled: bool = True

@@ -28,8 +28,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+      - ./service-account-key.json:/app/service-account-key.json
     env_file:
       - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account-key.json
     ports:
       - "7000:7000"
     networks:
@@ -57,6 +60,8 @@ services:
       - .:/app
     env_file:
       - .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account-key.json
     depends_on:
       - redis
       - app

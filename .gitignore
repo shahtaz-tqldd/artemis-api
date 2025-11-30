@@ -46,3 +46,4 @@ Thumbs.db
 # If you keep config files locally but not in repo:
 *.local
 *.envrc
+service-account-key.json

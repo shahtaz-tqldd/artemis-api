@@ -85,6 +85,11 @@ Make sure PostgreSQL credentials match your `.env` file.
 
 ---
 
+## Google Account Connection
+- Make a new google cloud project retrieve project name
+- Get started with google cloud cli and generate service-account-key.json
+- keep the service-account-key.json in root folder
+
 ## Database Migrations (Alembic)
 
 Alembic is already set up in the project.

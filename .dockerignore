@@ -19,4 +19,5 @@ logs/
 *.swp
 *.swo
 .DS_Store
+service-account-key.json
 

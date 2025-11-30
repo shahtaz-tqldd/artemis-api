@@ -8,6 +8,7 @@ class BaseResponse(BaseModel):
     """Base response schema"""
     success: bool = Field(default=True, description="Request success status")
     message: str = Field(default="Success", description="Response message")
+    duration: Optional[float] = Field(default=None, description="Processing duration in seconds")
 
 
 class DataResponse(BaseResponse, Generic[DataT]):
