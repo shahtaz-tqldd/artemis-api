@@ -1,16 +1,15 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    image: postgres:16
     container_name: artemis_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: artemis_db
       POSTGRES_USER: algostar
-      POSTGRES_PASSWORD: test@1A23
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: test1234
       POSTGRES_MULTIPLE_DATABASES: artemis_db,adk_sessions
     ports:
-      - "5434:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -44,7 +43,7 @@ services:
     container_name: artemis_redis
     restart: unless-stopped
     ports:
-      - "6380:6379"
+      - "6379:6379"
     networks:
       - artemis-network
 

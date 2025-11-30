@@ -1,9 +1,10 @@
-from typing import Union
 import traceback
+from typing import Union
+from pydantic import ValidationError
 
 from fastapi import status
 from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
+
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse

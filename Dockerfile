@@ -4,14 +4,17 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Install system deps
-RUN apt-get update && apt-get install -y build-essential libpq-dev --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
 # Install Python deps
 RUN pip install --upgrade pip setuptools && \
     pip install --no-cache-dir -r requirements.txt
+
+# install alembic
+RUN pip install alembic
 
 COPY . .
 

@@ -1,6 +1,6 @@
 from functools import lru_cache
-from typing import List, Literal
-from pydantic import Field, field_validator, PostgresDsn
+from typing import List, Literal, Dict, Any
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,11 +11,12 @@ class Settings(BaseSettings):
     app_name: str = "Artemis Trading API"
     app_env: Literal["dev", "staging", "prod"] = "dev"
     debug: bool = Field(default=True, description="Debug mode")
-    port: int = Field(default=8000, ge=1024, le=65535)
+    port: int = Field(default=8000)
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     
     # API
     api_v1_prefix: str = "/api/v1"
+    openapi_prefix: str = ""
     
     # CORS
     allowed_origins: List[str] = Field(default=["*"])
@@ -26,8 +27,7 @@ class Settings(BaseSettings):
     # Security
     trusted_hosts: List[str] = Field(default=["*"])
     jwt_secret_key: str = Field(
-        default="your-secret-key-change-in-production",
-        min_length=32,
+        default="5ca7dab2bd66eea423de74e6bd7f7c67f19e9a8fee03ebb98d1505ddaf5db365"
     )
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     postgres_max_overflow: int = Field(default=10, ge=0, le=50)
     postgres_pool_timeout: int = Field(default=30, ge=10, le=60)
     postgres_pool_recycle: int = Field(default=3600, ge=300)
+    adk_db: str = "adk_sessions"
     
     # Redis
     redis_host: str = Field(default="localhost")
@@ -102,6 +103,14 @@ class Settings(BaseSettings):
         )
     
     @property
+    def adk_db_url(self) -> str:
+        """PostgreSQL DB URL for ADK sessions"""
+        return (
+            f"postgresql://{self.postgres_user}:{self.postgres_password}"
+            f"@{self.postgres_server}:{self.postgres_port}/{self.adk_db}"
+        )
+    
+    @property
     def redis_url(self) -> str:
         """Redis connection URL"""
         auth = f":{self.redis_password}@" if self.redis_password else ""
@@ -116,6 +125,20 @@ class Settings(BaseSettings):
     def celery_result_redis_backend(self) -> str:
         """Celery result backend URL (defaults to Redis)"""
         return self.celery_result_backend or self.redis_url
+    
+    @property
+    def fastapi_kwargs(self) -> Dict[str, Any]:
+        return {
+            "title": self.app_name,
+            "version":"1.0.0",
+            "app_env": self.app_env,
+            "debug": self.debug,
+            "api_prefix": self.api_v1_prefix,
+            "openapi_prefix": self.openapi_prefix,
+            "openapi_url":f"{self.api_v1_prefix}/openapi.json" if self.debug else None,
+            "docs_url":f"{self.api_v1_prefix}/docs" if self.debug else None,
+            "redoc_url":f"{self.api_v1_prefix}/redoc" if self.debug else None,
+        }
 
 
 @lru_cache()
