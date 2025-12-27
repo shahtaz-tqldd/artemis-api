@@ -1,8 +1,6 @@
 from datetime import datetime
-from typing import Optional
-
 from sqlalchemy.orm import declared_attr, Mapped, mapped_column
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -23,22 +21,8 @@ class TimestampMixin:
     )
 
 
-class UserTrackMixin:
-    """Adds created_by / updated_by fields (simple string or FK later)."""
-
-    created_by: Mapped[Optional[str]] = mapped_column(
-        String(100),
-        nullable=True
-    )
-
-    updated_by: Mapped[Optional[str]] = mapped_column(
-        String(100),
-        nullable=True
-    )
-
-
 # Combine into one base mixin for convenience
-class BaseModel(DeclarativeBase, TimestampMixin, UserTrackMixin):
+class BaseModel(DeclarativeBase, TimestampMixin):
     __abstract__ = True
 
     @declared_attr

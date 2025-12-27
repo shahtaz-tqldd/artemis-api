@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.health.router import router as health_router 
-from trading_agent.router import router as trading_agent_router
+from chat.router import router as chat_router
 
 # Main API router
 api_router = APIRouter()
@@ -13,7 +13,7 @@ api_router.include_router(
     tags=["Health"],
 )
 api_router.include_router(
-    trading_agent_router,
-    prefix="/trading-agent",
-    tags=["Trading Agent"],
+    chat_router,
+    prefix="/chat",
+    tags=["Chat Session"],
 )

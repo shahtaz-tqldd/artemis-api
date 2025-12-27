@@ -151,3 +151,9 @@ http://localhost:7000/api/v1/redoc
 ```
 
 ---
+
+
+# delete cache in alembic/versions:
+```
+sudo find . -type d -name "__pycache__" -exec rm -rf {} +
+```

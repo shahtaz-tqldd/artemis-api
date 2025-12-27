@@ -64,12 +64,7 @@ SyncSessionLocal = sessionmaker(
 # Session Dependencies
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """
-    FastAPI dependency for async database sessions.
-    
-    Usage:
-        @router.get("/users")
-        async def get_users(db: AsyncSession = Depends(get_async_session)):
-            ...
+    FastAPI dependency for async database sessions
     """
     async with AsyncSessionLocal() as session:
         try:
@@ -85,17 +80,6 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 def get_sync_session() -> Session:
     """
     Get sync session for Celery tasks.
-    
-    Usage (in Celery task):
-        db = get_sync_session()
-        try:
-            # Your database operations
-            db.commit()
-        except Exception:
-            db.rollback()
-            raise
-        finally:
-            db.close()
     """
     return SyncSessionLocal()
 

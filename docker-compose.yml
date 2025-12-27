@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: artemis_db
       POSTGRES_USER: algostar
       POSTGRES_PASSWORD: test1234
-      POSTGRES_MULTIPLE_DATABASES: artemis_db,adk_sessions
+      POSTGRES_MULTIPLE_DATABASES: artemis_db, adk_sessions
     ports:
       - "5432:5432"
     volumes:

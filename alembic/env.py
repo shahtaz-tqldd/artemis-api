@@ -9,7 +9,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.core.config import get_settings
+from app.db.base import Base
+
 from app.base.models import BaseModel
+from chat.db.models import Session, Message
 
 # this is the Alembic Config object
 config = context.config

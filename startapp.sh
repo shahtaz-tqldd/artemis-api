@@ -1,14 +1,23 @@
 #!/bin/sh
 
-# clean docker
-docker system prune --force
+set -e
 
-# create docker network (ignore error if exists)
-echo "Creating Docker network"
-docker network create artemis-network || true
+echo "Starting local development environment"
 
-echo "closing dev docker"
-docker compose -f docker-compose.yml down || true
+# 1. Create network only if needed
+NETWORK_NAME="artemis-network"
 
-echo "running docker compose for webserver"
+if ! docker network ls | grep -q "$NETWORK_NAME"; then
+  echo "Creating Docker network: $NETWORK_NAME"
+  docker network create $NETWORK_NAME
+else
+  echo "Docker network '$NETWORK_NAME' already exists"
+fi
+
+# 2. Stop existing containers gracefully
+echo "Stopping existing docker-compose stack..."
+docker compose -f docker-compose.yml down --remove-orphans
+
+# 3. Start the stack in background (recommended for dev)
+echo "Starting docker services..."
 docker compose -f docker-compose.yml up --build --remove-orphans
