@@ -1,8 +1,7 @@
 from uuid import uuid4, UUID
-from typing import List
 
 from chat.db.crud import SessionCRUD
-from chat.schema import SessionCreate, MessageCreate
+from chat.schema import SessionCreate
 from chat.utils.choices import PLATFORMS
 
 
@@ -24,9 +23,9 @@ class SessionService:
             user_id=user_id,
         )
 
-    async def create_session(self, session_data: SessionCreate):
-        session_id = uuid4()
-        return await self.session_crud.create_session(session_id, session_data)
+    
+    async def delete_session(self, session_id):
+        return await self.session_crud.delete(session_id)
 
     async def get_messages(
         self,

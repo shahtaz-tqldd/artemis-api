@@ -1,13 +1,13 @@
+from fastapi import HTTPException
 from typing import Optional, List, Tuple
 from uuid import UUID, uuid4
+
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from chat.db.models import Session, Message
 from chat.utils.choices import PLATFORMS
-
-from chat.schema import SessionSchema
-
+from chat.schema import SessionSchema, SessionMessage
 
 class SessionCRUD:
     def __init__(self, db: AsyncSession):
@@ -53,7 +53,7 @@ class SessionCRUD:
         session_id: UUID,
         page: int = 1,
         page_size: int = 20,
-    ) -> Tuple[List[Message], int]:
+    ) -> Tuple[List[SessionMessage], int]:
         
         # Base query for this session
         base_stmt = select(Message).where(Message.session_id == session_id)
@@ -72,7 +72,13 @@ class SessionCRUD:
         result = await self.db.execute(stmt)
         messages = result.scalars().all()
 
-        return messages, total
+        message_list = [
+            SessionMessage.model_validate(message)
+            for message in messages
+        ]
+
+        return message_list, total
+
 
     async def create_session(self, session_id: UUID, session_data:dict):
         session = Session(
@@ -85,6 +91,7 @@ class SessionCRUD:
         await self.db.commit()
         await self.db.refresh(session)
         return session
+
 
     async def create_message_bulk(
         self,
@@ -107,3 +114,18 @@ class SessionCRUD:
         self.db.add_all(messages)
         await self.db.commit()
         return messages
+
+
+    async def delete(self, session_id: UUID):
+        result = await self.db.execute(
+            select(Session).where(Session.session_id == session_id)
+        )
+        session = result.scalar_one_or_none()
+
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+
+        await self.db.delete(session)
+        await self.db.commit()
+
+        return session

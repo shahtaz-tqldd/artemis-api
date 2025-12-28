@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from uuid import UUID
-from typing import Optional, Dict
+from typing import Optional, Dict, Optional, Any
 from datetime import datetime
 from chat.utils.choices import PLATFORMS, SENDER_OPTIONS
 
@@ -15,6 +15,16 @@ class SessionSchema(BaseModel):
     user_id: str
     platform: PLATFORMS
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class SessionMessage(BaseModel):
+    session_id: UUID
+    message: str
+    sender: SENDER_OPTIONS
+    created_at: datetime
+    resource: Optional[Any] = None
 
     class Config:
         from_attributes = True

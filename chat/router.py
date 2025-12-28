@@ -2,11 +2,11 @@ import json
 from uuid import UUID
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, UploadFile, File, Form, Request
+from fastapi import APIRouter, Depends, Query, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_async_session
-from app.base.schema import DataResponse, ListResponse
+from app.base.schema import DataResponse, ListResponse, BaseResponse
 
 from chat.services import SessionService
 from chat.utils.choices import PLATFORMS
@@ -73,6 +73,18 @@ async def get_session_messages(
         page_size=page_size,
         total=total,
     )
+
+
+@router.delete("/sessions/{session_id}", response_model=BaseResponse)
+async def delete_session(
+    session_id: UUID,
+    service: SessionService = Depends(get_session_service),
+):
+    """
+    Delete session with a session_id
+    """
+    await service.delete_session(session_id)
+    return BaseResponse(message="Session deleted successfully!")
 
 
 # Chat
